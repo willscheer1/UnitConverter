@@ -3,6 +3,7 @@ Display's UI that allows user to convert a selected unit at a given value into a
 """
 import re
 import tkinter as tk
+import tkinter.font as tkFont
 from tkinter import ttk
 from PIL import Image, ImageTk
 
@@ -13,6 +14,33 @@ class UnitConverter:
         """
         Creates window and necessary widgets to display and operate the Unit Converter.
         """
+        self.unit_dict = {
+            "Area": {
+                "Square kilometer": "km\u00B2",
+                "Square meter": "m\u00B2",
+                "Square mile": "mi\u00B2",
+                "Square yard": "yd\u00B2",
+                "Square foot": "ft\u00B2",
+                "Square inch": "in\u00B2",
+                "Hectare": "ha",
+                "Acre": "ac"
+            },
+            "Data Transfer Rate": {
+                "Bit per second": "bit/s",
+                "Kilobit per second": "kb/s",
+                "Kilobyte per second": "kB/s",
+                "Kibibit per second": "Kibits/s",
+                "Megabit per second": "Mb/s",
+                "Megabyte per second": "MB/s",
+                "Mebibit per second": "Mibit/s",
+                "Gigabit per second": "Gb/s",
+                "Gigabyte per second": "GB/s",
+                "Gibibit per second": "Gibit/s",
+                "Terabit per second": "Tb/s",
+                "Terabyte per second": "TB/s",
+                "Tebibit per second": "Tibit/s"
+            }
+        }
         bg_color = "#c8d7e0"
 
         # window setup
@@ -23,10 +51,17 @@ class UnitConverter:
         self.window.config(bg=bg_color)
         self.window.columnconfigure([0, 1, 2], weight=1)    # make columns equal width
         # --styling
-        style=ttk.Style()
-        style.theme_use("clam")
-        style.configure("TCombobox", fieldbackground="#e1eaf0")
-        self.window.option_add("*TCombobox*Listbox*Background", "#e1eaf0")
+        style = ttk.Style()
+        combostyle = ttk.Style()
+        combostyle.theme_create('combostyle', parent='clam', settings = {'TCombobox':
+                                                                         {'configure':
+                                                                          {'selectbackground': '#e1eaf0',
+                                                                           'fieldbackground': '#e1eaf0',
+                                                                           'selectforeground': 'black'
+                                                                           }}})
+
+        style.theme_use('combostyle')
+        self.window.option_add("*TCombobox*Listbox*Font", tkFont.Font(family="Arial", size=16))
 
         # window title text
         tk.Label(self.window,
@@ -41,7 +76,13 @@ class UnitConverter:
         self.unit_type_dropdown = ttk.Combobox(self.window,
                                         width=15,
                                         font=("Arial", 16),
+                                        justify="center",
+                                        values=list(self.unit_dict.keys()),
+                                        state="readonly",
+                                        textvariable=self.unit_type
                                         )
+        self.unit_type_dropdown.current(0)
+        self.unit_type_dropdown.bind("<<ComboboxSelected>>", lambda *args: self.set_units(self.unit_type))
         self.unit_type_dropdown.place(x=352, y=155)
 
         # entry frame
@@ -60,11 +101,11 @@ class UnitConverter:
                                   borderwidth=0,
                                   textvariable=self.input_value
                                 )
-        self.input_box.place(x=80, y=270)
+        self.input_box.place(x=75, y=270)
         self.input_box.focus_set()
         # --input unit
         self.entry_display_units = tk.Label(entry_frame,
-                                   text="mph",
+                                   text="km\u00B2",
                                    font=("Arial", 16),
                                    bg=bg_color
                                 )
@@ -73,8 +114,10 @@ class UnitConverter:
         self.entry_unit = tk.StringVar()
         self.entry_dropdown = ttk.Combobox(entry_frame,
                                            width=18,
-                                           font=("Arial", 16)
+                                           font=("Arial", 16),
+                                           textvariable=self.entry_unit
                                         )
+        self.entry_dropdown.bind("<<ComboboxSelected>>", lambda *args: self.set_display_unit("entry"))
         self.entry_dropdown.grid(row=1)
 
         # divider
@@ -128,7 +171,7 @@ class UnitConverter:
         # --output text
         self.result_text = tk.Label(self.window,
                                     width=8,
-                                    text="12345678",
+                                    text="0",
                                     font=("Monospace", 32),
                                     anchor="e",
                                     bg=bg_color
@@ -145,16 +188,50 @@ class UnitConverter:
         self.result_unit = tk.StringVar()
         self.result_dropdown = ttk.Combobox(result_frame,
                                             width=18,
-                                            font=("Arial", 16)
+                                            font=("Arial", 16),
+                                            textvariable=self.result_unit
                                             )
+        self.result_dropdown.bind("<<ComboboxSelected>>", lambda *args: self.set_display_unit("result"))
         self.result_dropdown.grid(row=1)
 
-    def get_units(self, unit_type):
+        # set starting display and dropdown units
+        self.set_units(self.unit_type)
+
+
+    def set_display_unit(self, display_type: str) -> None:
         """
+        Sets unit displayed next to either the entry input box or the result text to match the selected unit.
+
+        Parameters:
+            display_type (str): ["entry", "result"] - determines which display unit is changed.
         """
-        pass
+        # set entry side
+        if display_type == "entry":
+            self.entry_display_units.config(text=self.unit_dict[self.unit_type.get()][self.entry_unit.get()])
+        # set result side
+        elif display_type == "result":
+            self.result_display_units.config(text=self.unit_dict[self.unit_type.get()][self.result_unit.get()])
+
+    def set_units(self, unit_type: object) -> None:
+        """
+        Sets the units available in the entry and result dropdown menus, sets the default starting units,
+        and sets the display units.
+
+        Parameters:
+            unit_type (obj): Text object representing the unit type selected in the unit type dropdown.
+        """
+        units = list(self.unit_dict[unit_type.get()].keys())
+        # set dropdown units
+        self.entry_dropdown["values"] = units
+        self.result_dropdown["values"] = units
+        # set default starting units
+        self.entry_dropdown.current(0)
+        self.result_dropdown.current(1)
+        # set display units
+        self.set_display_unit("entry")
+        self.set_display_unit("result")
     
-    def limit_entry(self, entry_text):
+    def limit_entry(self, entry_text: object) -> None:
         """
         Disallows any character that is not a digit or "." from being entered.
         Limits max length to 8 characters.
@@ -171,6 +248,7 @@ class UnitConverter:
 
     def run(self) -> None:
         """
+        Runs the Unit Converter.
         """
         self.window.mainloop()
 
