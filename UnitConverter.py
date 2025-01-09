@@ -6,6 +6,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import ttk
 from PIL import Image, ImageTk
+from unit_dictionary import unit_dict
 
 
 class UnitConverter:
@@ -14,34 +15,8 @@ class UnitConverter:
         """
         Creates window and necessary widgets to display and operate the Unit Converter.
         """
-        self.unit_dict = {
-            "Area": {
-                "Square kilometer": "km\u00B2",
-                "Square meter": "m\u00B2",
-                "Square mile": "mi\u00B2",
-                "Square yard": "yd\u00B2",
-                "Square foot": "ft\u00B2",
-                "Square inch": "in\u00B2",
-                "Hectare": "ha",
-                "Acre": "ac"
-            },
-            "Data Transfer Rate": {
-                "Bit per second": "bit/s",
-                "Kilobit per second": "kb/s",
-                "Kilobyte per second": "kB/s",
-                "Kibibit per second": "Kibits/s",
-                "Megabit per second": "Mb/s",
-                "Megabyte per second": "MB/s",
-                "Mebibit per second": "Mibit/s",
-                "Gigabit per second": "Gb/s",
-                "Gigabyte per second": "GB/s",
-                "Gibibit per second": "Gibit/s",
-                "Terabit per second": "Tb/s",
-                "Terabyte per second": "TB/s",
-                "Tebibit per second": "Tibit/s"
-            }
-        }
-        bg_color = "#c8d7e0"
+        self.unit_dict = unit_dict
+        bg_color = "#79baf7"
 
         # window setup
         self.window = tk.Tk()
@@ -55,8 +30,8 @@ class UnitConverter:
         combostyle = ttk.Style()
         combostyle.theme_create('combostyle', parent='clam', settings = {'TCombobox':
                                                                          {'configure':
-                                                                          {'selectbackground': '#e1eaf0',
-                                                                           'fieldbackground': '#e1eaf0',
+                                                                          {'selectbackground': '#eee',
+                                                                           'fieldbackground': '#eee',
                                                                            'selectforeground': 'black'
                                                                            }}})
 
@@ -101,7 +76,7 @@ class UnitConverter:
                                   borderwidth=0,
                                   textvariable=self.input_value
                                 )
-        self.input_box.place(x=75, y=270)
+        self.input_box.place(x=55, y=270)
         self.input_box.focus_set()
         # --input unit
         self.entry_display_units = tk.Label(entry_frame,
@@ -176,7 +151,7 @@ class UnitConverter:
                                     anchor="e",
                                     bg=bg_color
                                     )
-        self.result_text.place(x=568, y=268)
+        self.result_text.place(x=540, y=268)
         # --output unit
         self.result_display_units = tk.Label(result_frame,
                                     text="km/h",
