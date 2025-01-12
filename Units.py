@@ -164,6 +164,89 @@ unit_library = {
     }
 }
 
+conversion_library = {
+    # area
+    "Square kilometer": {
+        "Square kilometer": lambda value: value,
+        "Square meter": lambda value: value * 10**6,
+        "Square mile": lambda value: value / 2.59,
+        "Square yard": lambda value: value * 1.196 * 10**6,
+        "Sqaure foot": lambda value: value * 1.076 * 10**7,
+        "Square inch": lambda value: value * 1.55 * 10**9,
+        "Hectare": lambda value: value * 100,
+        "Acre": lambda value: value * 247.1
+    },
+    "Square meter": {
+        "Square kilometer": lambda value: value / 10**6,
+        "Square meter": lambda value: value,
+        "Square mile": lambda value: value / (2.59 * 10**6),
+        "Square yard": lambda value: value * 1.196,
+        "Sqaure foot": lambda value: value * 10.764,
+        "Square inch": lambda value: value * 1550,
+        "Hectare": lambda value: value / 10000,
+        "Acre": lambda value: value / 4047
+    },
+    "Square mile": {
+        "Square kilometer": lambda value: value * 2.59,
+        "Square meter": lambda value: value * 2.59 * 10**6,
+        "Square mile": lambda value: value,
+        "Square yard": lambda value: value * 3.098 * 10**6,
+        "Sqaure foot": lambda value: value * 2.788 * 10**7,
+        "Square inch": lambda value: value * 4.014 * 10**9,
+        "Hectare": lambda value: value * 259,
+        "Acre": lambda value: value * 640
+    },
+    "Square yard": {
+        "Square kilometer": lambda value: value / (1.196 * 10**6),
+        "Square meter": lambda value: value / 1.196,
+        "Square mile": lambda value: value / (3.098 * 10**6),
+        "Square yard": lambda value: value,
+        "Sqaure foot": lambda value: value * 9,
+        "Square inch": lambda value: value * 1296,
+        "Hectare": lambda value: value / 11960,
+        "Acre": lambda value: value / 4840
+    },
+    "Square foot": {
+        "Square kilometer": lambda value: value / (1.076 * 10**7),
+        "Square meter": lambda value: value / 10.764,
+        "Square mile": lambda value: value / (2.788 * 10**7),
+        "Square yard": lambda value: value / 9,
+        "Sqaure foot": lambda value: value,
+        "Square inch": lambda value: value * 144,
+        "Hectare": lambda value: value / 107600,
+        "Acre": lambda value: value / 43560
+    },
+    "Square inch": {
+        "Square kilometer": lambda value: value / (1.55 * 10**9),
+        "Square meter": lambda value: value / 1550,
+        "Square mile": lambda value: value / (4.014 * 10**9),
+        "Square yard": lambda value: value / 1296,
+        "Sqaure foot": lambda value: value / 144,
+        "Square inch": lambda value: value,
+        "Hectare": lambda value: value / (1.55 * 10**7),
+        "Acre": lambda value: value / (6.273 * 10**6)
+    },
+    "Hectare": {
+        "Square kilometer": lambda value: value / 100,
+        "Square meter": lambda value: value * 10000,
+        "Square mile": lambda value: value / 259,
+        "Square yard": lambda value: value * 11960,
+        "Sqaure foot": lambda value: value * 107600,
+        "Square inch": lambda value: value * 1.55 * 10**7,
+        "Hectare": lambda value: value,
+        "Acre": lambda value: value * 2.471
+    },
+    "Acre": {
+        "Square kilometer": lambda value: value / 247.1,
+        "Square meter": lambda value: value * 4047,
+        "Square mile": lambda value: value / 640,
+        "Square yard": lambda value: value * 4840,
+        "Sqaure foot": lambda value: value * 43560,
+        "Square inch": lambda value: value * 6.273 * 10**6,
+        "Hectare": lambda value: value / 2.471,
+        "Acre": lambda value: value
+    }
+}
 
 def types() -> list[str]:
     """
