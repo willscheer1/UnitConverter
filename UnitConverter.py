@@ -2,11 +2,11 @@
 Display's UI that allows user to convert a selected unit at a given value into another selected unit of the same type.
 """
 import re
+import Units
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import ttk
 from PIL import Image, ImageTk
-from unit_dictionary import unit_dict
 
 
 class UnitConverter:
@@ -15,7 +15,6 @@ class UnitConverter:
         """
         Creates window and necessary widgets to display and operate the Unit Converter.
         """
-        self.unit_dict = unit_dict
         bg_color = "#79baf7"
 
         # window setup
@@ -24,7 +23,7 @@ class UnitConverter:
         self.window.geometry("900x600")
         self.window.resizable(False, False)
         self.window.config(bg=bg_color)
-        self.window.columnconfigure([0, 1, 2], weight=1)    # make columns equal width
+        self.window.columnconfigure(0, weight=1)    # make columns equal width
         # --styling
         style = ttk.Style()
         combostyle = ttk.Style()
@@ -34,7 +33,6 @@ class UnitConverter:
                                                                            'fieldbackground': '#eee',
                                                                            'selectforeground': 'black'
                                                                            }}})
-
         style.theme_use('combostyle')
         self.window.option_add("*TCombobox*Listbox*Font", tkFont.Font(family="Arial", size=16))
 
@@ -44,7 +42,7 @@ class UnitConverter:
                  justify="center",
                  bg=bg_color,
                  font=("Arial", 26)
-                ).grid(row=0, columnspan=3, pady=25)
+                ).grid(row=0, pady=25)
         
         # unit type dropdown
         self.unit_type = tk.StringVar()
@@ -52,23 +50,35 @@ class UnitConverter:
                                         width=15,
                                         font=("Arial", 16),
                                         justify="center",
-                                        values=list(self.unit_dict.keys()),
+                                        values=Units.types(),
                                         state="readonly",
                                         textvariable=self.unit_type
                                         )
         self.unit_type_dropdown.current(0)
         self.unit_type_dropdown.bind("<<ComboboxSelected>>", lambda *args: self.set_units(self.unit_type))
-        self.unit_type_dropdown.place(x=352, y=155)
+        self.unit_type_dropdown.grid(row=1, pady=(50, 0))
+
+        # main frame
+        main_frame = tk.Frame(self.window,
+                              bg=bg_color
+                              )
+        main_frame.grid(row=2, sticky="nsew", padx=25)
+        main_frame.columnconfigure([0, 1, 2], weight=1)
 
         # entry frame
-        entry_frame = tk.Frame(self.window,
+        entry_frame = tk.Frame(main_frame,
                                bg=bg_color
-                            )
-        entry_frame.grid(row=1, column=0, padx=80, pady=175, sticky="w")
+                               )
+        entry_frame.grid(row=0, column=0, pady=85, sticky="nw")
+        # --input frame
+        input_frame = tk.Frame(entry_frame,
+                               bg=bg_color
+                               )
+        input_frame.grid(row=0, pady=10)
         # --input box
         self.input_value = tk.StringVar()
         self.input_value.trace_add("write", lambda *args: self.limit_entry(self.input_value))
-        self.input_box = tk.Entry(self.window,
+        self.input_box = tk.Entry(input_frame,
                                   width=8,
                                   justify="right",
                                   font=("Monospace", 32),
@@ -76,35 +86,44 @@ class UnitConverter:
                                   borderwidth=0,
                                   textvariable=self.input_value
                                 )
-        self.input_box.place(x=55, y=270)
+        self.input_box.grid(row=0, column=0)
         self.input_box.focus_set()
         # --input unit
-        self.entry_display_units = tk.Label(entry_frame,
-                                   text="km\u00B2",
+        self.entry_display_units = tk.Label(input_frame,
                                    font=("Arial", 16),
                                    bg=bg_color
                                 )
-        self.entry_display_units.grid(row=0, pady=15, sticky="e")
+        self.entry_display_units.grid(row=0, column=1, padx=10, pady=(15, 0))
         # --entry dropdown
         self.entry_unit = tk.StringVar()
         self.entry_dropdown = ttk.Combobox(entry_frame,
-                                           width=18,
+                                           width=20,
                                            font=("Arial", 16),
+                                           state="readonly",
                                            textvariable=self.entry_unit
                                         )
         self.entry_dropdown.bind("<<ComboboxSelected>>", lambda *args: self.set_display_unit("entry"))
-        self.entry_dropdown.grid(row=1)
+        self.entry_dropdown.grid(row=1, padx=22)
 
-        # divider
-        # --arrows image
+        # arrows image
         arrows = Image.open("arrows.png")
         arrows = arrows.resize((20, 20), Image.LANCZOS)
         arrows = ImageTk.PhotoImage(arrows)
-        # --divider frame
-        divider_frame = tk.Frame(self.window,
+
+        # divider frame
+        divider_frame = tk.Frame(main_frame,
                                  bg=bg_color
                                 )
-        divider_frame.grid(row=1, column=1, sticky="ew")
+        divider_frame.grid(row=0, column=1)
+        # --design line top
+        line_top = tk.Canvas(divider_frame,
+                             height=55,
+                             width=10,
+                             bg=bg_color,
+                             highlightthickness=0
+                             )
+        line_top.create_line(6, 0, 6, 55, fill="#000", width=1)
+        line_top.grid(row=0, pady=25)
         # --top arrows
         arrows_top = tk.Label(divider_frame,
                               width=20,
@@ -113,13 +132,13 @@ class UnitConverter:
                               image=arrows
                               )
         arrows_top.image = arrows
-        arrows_top.grid(row=0, padx=(10, 0))
+        arrows_top.grid(row=1, padx=(10, 0))
         # --convert button
         convert_button = tk.Button(divider_frame,
                                    font=("Arial", 16),
                                    text="Convert"
                                    )
-        convert_button.grid(row=1, pady=10)
+        convert_button.grid(row=2, pady=10)
         # --bottom arrows
         arrows_bottom = tk.Label(divider_frame,
                                  width=20,
@@ -127,47 +146,50 @@ class UnitConverter:
                                  bg=bg_color,
                                  image=arrows
                                  )
-        arrows_bottom.grid(row=2, padx=(10, 0))
-        # --design line
-        canvas = tk.Canvas(self.window,
-                            height=165,
-                            width=10,
-                            bg=bg_color,
-                            highlightthickness=0
-                            )
-        canvas.place(x=445, y=390)
-        canvas.create_line(6, 0, 6, 180, fill="#000", width=1)
-
+        arrows_bottom.grid(row=3, padx=(10, 0))
+        # --design line bottom
+        line_bottom = tk.Canvas(divider_frame,
+                           height=165,
+                           width=10,
+                           bg=bg_color,
+                           highlightthickness=0
+                           )
+        line_bottom.create_line(6, 0, 6, 180, fill="#000", width=1)
+        line_bottom.grid(row=4, pady=(25, 0))
+        
         # result frame
-        result_frame = tk.Frame(self.window,
-                                     bg=bg_color
-                                     )
-        result_frame.grid(row=1, column=2, padx=80, pady=175, sticky="e") # parent fame
+        result_frame = tk.Frame(main_frame,
+                                bg=bg_color
+                                )
+        result_frame.grid(row=0, column=2, pady=85, sticky="ne")
+        # --output frame
+        output_frame = tk.Frame(result_frame,
+                                bg=bg_color
+                                )
+        output_frame.grid(row=0, pady=8)
         # --output text
-        self.result_text = tk.Label(self.window,
+        self.result_text = tk.Label(output_frame,
                                     width=8,
-                                    text="0",
                                     font=("Monospace", 32),
                                     anchor="e",
                                     bg=bg_color
                                     )
-        self.result_text.place(x=540, y=268)
+        self.result_text.grid(row=0, column=0, sticky="e")
         # --output unit
-        self.result_display_units = tk.Label(result_frame,
-                                    text="km/h",
+        self.result_display_units = tk.Label(output_frame,
                                     font=("Arial", 16),
                                     bg=bg_color
                                     )
-        self.result_display_units.grid(row=0, pady=15, sticky="e")
+        self.result_display_units.grid(row=0, column=1, padx=10, pady=(15, 0))
         # --result dropdown
         self.result_unit = tk.StringVar()
         self.result_dropdown = ttk.Combobox(result_frame,
-                                            width=18,
+                                            width=20,
                                             font=("Arial", 16),
                                             textvariable=self.result_unit
                                             )
         self.result_dropdown.bind("<<ComboboxSelected>>", lambda *args: self.set_display_unit("result"))
-        self.result_dropdown.grid(row=1)
+        self.result_dropdown.grid(row=1, padx=29)
 
         # set starting display and dropdown units
         self.set_units(self.unit_type)
@@ -182,10 +204,10 @@ class UnitConverter:
         """
         # set entry side
         if display_type == "entry":
-            self.entry_display_units.config(text=self.unit_dict[self.unit_type.get()][self.entry_unit.get()])
+            self.entry_display_units.config(text=Units.symbol(self.entry_unit.get()))
         # set result side
         elif display_type == "result":
-            self.result_display_units.config(text=self.unit_dict[self.unit_type.get()][self.result_unit.get()])
+            self.result_display_units.config(text=Units.symbol(self.result_unit.get()))
 
     def set_units(self, unit_type: object) -> None:
         """
@@ -195,7 +217,7 @@ class UnitConverter:
         Parameters:
             unit_type (obj): Text object representing the unit type selected in the unit type dropdown.
         """
-        units = list(self.unit_dict[unit_type.get()].keys())
+        units = Units.units(unit_type.get())
         # set dropdown units
         self.entry_dropdown["values"] = units
         self.result_dropdown["values"] = units
