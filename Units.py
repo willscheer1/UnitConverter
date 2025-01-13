@@ -2,6 +2,7 @@
 """
 
 unit_library = {
+    # stores all unit symbols
     "Area": {
         "Square kilometer": "km\u00B2",
         "Square meter": "m\u00B2",
@@ -165,13 +166,15 @@ unit_library = {
 }
 
 conversion_library = {
-    # area
+    # stores all conversion functions
+
+    # AREA
     "Square kilometer": {
         "Square kilometer": lambda value: value,
         "Square meter": lambda value: value * 10**6,
         "Square mile": lambda value: value / 2.59,
         "Square yard": lambda value: value * 1.196 * 10**6,
-        "Sqaure foot": lambda value: value * 1.076 * 10**7,
+        "Square foot": lambda value: value * 1.076 * 10**7,
         "Square inch": lambda value: value * 1.55 * 10**9,
         "Hectare": lambda value: value * 100,
         "Acre": lambda value: value * 247.1
@@ -181,7 +184,7 @@ conversion_library = {
         "Square meter": lambda value: value,
         "Square mile": lambda value: value / (2.59 * 10**6),
         "Square yard": lambda value: value * 1.196,
-        "Sqaure foot": lambda value: value * 10.764,
+        "Square foot": lambda value: value * 10.764,
         "Square inch": lambda value: value * 1550,
         "Hectare": lambda value: value / 10000,
         "Acre": lambda value: value / 4047
@@ -191,7 +194,7 @@ conversion_library = {
         "Square meter": lambda value: value * 2.59 * 10**6,
         "Square mile": lambda value: value,
         "Square yard": lambda value: value * 3.098 * 10**6,
-        "Sqaure foot": lambda value: value * 2.788 * 10**7,
+        "Square foot": lambda value: value * 2.788 * 10**7,
         "Square inch": lambda value: value * 4.014 * 10**9,
         "Hectare": lambda value: value * 259,
         "Acre": lambda value: value * 640
@@ -201,7 +204,7 @@ conversion_library = {
         "Square meter": lambda value: value / 1.196,
         "Square mile": lambda value: value / (3.098 * 10**6),
         "Square yard": lambda value: value,
-        "Sqaure foot": lambda value: value * 9,
+        "Square foot": lambda value: value * 9,
         "Square inch": lambda value: value * 1296,
         "Hectare": lambda value: value / 11960,
         "Acre": lambda value: value / 4840
@@ -211,7 +214,7 @@ conversion_library = {
         "Square meter": lambda value: value / 10.764,
         "Square mile": lambda value: value / (2.788 * 10**7),
         "Square yard": lambda value: value / 9,
-        "Sqaure foot": lambda value: value,
+        "Square foot": lambda value: value,
         "Square inch": lambda value: value * 144,
         "Hectare": lambda value: value / 107600,
         "Acre": lambda value: value / 43560
@@ -221,7 +224,7 @@ conversion_library = {
         "Square meter": lambda value: value / 1550,
         "Square mile": lambda value: value / (4.014 * 10**9),
         "Square yard": lambda value: value / 1296,
-        "Sqaure foot": lambda value: value / 144,
+        "Square foot": lambda value: value / 144,
         "Square inch": lambda value: value,
         "Hectare": lambda value: value / (1.55 * 10**7),
         "Acre": lambda value: value / (6.273 * 10**6)
@@ -231,7 +234,7 @@ conversion_library = {
         "Square meter": lambda value: value * 10000,
         "Square mile": lambda value: value / 259,
         "Square yard": lambda value: value * 11960,
-        "Sqaure foot": lambda value: value * 107600,
+        "Square foot": lambda value: value * 107600,
         "Square inch": lambda value: value * 1.55 * 10**7,
         "Hectare": lambda value: value,
         "Acre": lambda value: value * 2.471
@@ -241,7 +244,7 @@ conversion_library = {
         "Square meter": lambda value: value * 4047,
         "Square mile": lambda value: value / 640,
         "Square yard": lambda value: value * 4840,
-        "Sqaure foot": lambda value: value * 43560,
+        "Square foot": lambda value: value * 43560,
         "Square inch": lambda value: value * 6.273 * 10**6,
         "Hectare": lambda value: value / 2.471,
         "Acre": lambda value: value
@@ -257,7 +260,6 @@ def types() -> list[str]:
     """
     return list(unit_library.keys())
 
-
 def units(unit_type: str) -> list[str]:
     """
     Returns all units for a given unit type.
@@ -272,7 +274,6 @@ def units(unit_type: str) -> list[str]:
     except:
         print("Given unit type not found in unit library.")
         return []
-
 
 def symbol(unit: str) -> str:
     """
@@ -294,3 +295,17 @@ def symbol(unit: str) -> str:
     print("Given unit not found in unit library.")
     return "--"
 
+def convert(value: float, start_unit: str, end_unit: str) -> float:
+    """
+    Converts the given value from the given start unit to the given end unit.
+
+    Parameters:
+        value (float): Starting value.
+        start_unit (str): Unit before conversion.
+        end_unit (str): Unit after conversion. 
+    """
+    try:
+        return conversion_library[start_unit][end_unit](value)
+    except:
+        print("Given unit not found in conversion library.")
+        return 0
