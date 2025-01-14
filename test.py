@@ -34,9 +34,24 @@ def test(unit_type: str) -> None:
             print(f"\tCalculated Value: {calculated_value}")
             print(f"\tDisplayed Value: {uc.format_result(Decimal(calculated_value))}\n")
         # # wait for next unit
+        print(f"({key})")
         inpt = input("Press 'Enter' to display next unit or 'e' to exit. ")
         if inpt == "e":
             exit()
         
-        
-test("Area")
+area = "Area"
+dtr = "Data Transfer Rate"
+ds = "Digital Storage"
+e = "Energy"
+f = "Frequency"
+fe = "Fuel Economy"
+l = "Length"
+m = "Mass"
+pa = "Plane Angle"
+p = "Pressure"
+s = "Speed"
+temp = "Temperature"
+t = "Time"
+v = "Volume"
+
+test(ds)
