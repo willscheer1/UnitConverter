@@ -286,7 +286,6 @@ class UnitConverter:
 
         return result_string
         
-    
     def update(self, display_type: str) -> None:
         """
         Changes display units for the given display type and updates output value.
